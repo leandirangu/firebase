@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" href="https://cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+</head>
+<body>
+<h1>MY TASKS</h1>
+<label>Task Name</label>
+<input id="task_name"></input>
+<button id="btn_add">add task</button>
+<ol id="task_items"></ol>
+
+<script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyCNxuxujjx3ehusitCFVn-GzkDFGFrbr4k",
+    authDomain: "project1-ca8f8.firebaseapp.com",
+    databaseURL: "https://project1-ca8f8.firebaseio.com",
+    projectId: "project1-ca8f8",
+    storageBucket: "project1-ca8f8.appspot.com",
+    messagingSenderId: "443337272599"
+  };
+  firebase.initializeApp(config);
+</script>
+<script>
+	var db = firebase.firestore();
+	db.settings({
+		timestampsInSnapshots:true
+	});
+	
+	const btn = document.querySelector("#btn_add");
+	const input = document.querySelector("#task_name");
+	btn.onclick = function(){
+		console.log(input.value);
+		db.collection("tasks").add({
+		task_name:input.value,
+		date:Date.now()
+	})
+	}
+	function renderTask(task){
+	var li=document.createElement('li');
+	li.innerHTML=task.task_name;
+	document.querySelector("#task_items").appendChild(li);
+	}
+	db.collection("tasks")
+	.orderBy("date")
+	.onSnapshot(function(snapshot){
+		document.querySelector("#task_items").innerHTML=""
+		snapshot.forEach((doc)=>{
+	const task = doc.data();
+	renderTask(task);
+	})})
+</script>
+
+</body>
+</html>
